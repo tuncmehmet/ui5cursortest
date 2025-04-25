@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>SAPUI5 Alternatif Test</title>
+    
+    <!-- Load SAPUI5 from alternative CDN -->
+    <script id="sap-ui-bootstrap"
+        src="https://sapui5.hana.ondemand.com/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_fiori_3"
+        data-sap-ui-libs="sap.m"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true">
+    </script>
+    
+    <script>
+        // Using document ready approach
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait for UI5 to be loaded
+            sap.ui.getCore().attachInit(function() {
+                // Create a simple button
+                var button = new sap.m.Button({
+                    text: "UI5 Test Butonu (Alternatif CDN)",
+                    press: function() {
+                        alert("ui5 started - alternatif CDN");
+                    }
+                });
+                
+                // Place the button in the DOM
+                button.placeAt("content");
+            });
+        });
+    </script>
+</head>
+<body class="sapUiBody">
+    <h1>SAPUI5 Alternatif Test Sayfası</h1>
+    <p>Alternatif bir CDN kullanıyoruz. Aşağıda bir buton görüyorsanız, SAPUI5 düzgün çalışıyor demektir:</p>
+    <div id="content"></div>
+</body>
+</html> 

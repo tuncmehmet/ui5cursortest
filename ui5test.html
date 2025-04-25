@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>SAPUI5 Basit Test</title>
+    
+    <!-- Load SAPUI5 from CDN -->
+    <script id="sap-ui-bootstrap"
+        src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true">
+    </script>
+    
+    <script>
+        sap.ui.getCore().attachInit(function() {
+            // Simple button creation within an immediately executed function
+            new sap.m.Button({
+                text: "UI5 Test Butonu",
+                press: function() {
+                    alert("ui5 started");
+                }
+            }).placeAt("content");
+        });
+    </script>
+</head>
+<body class="sapUiBody">
+    <h1>SAPUI5 Test Sayfası</h1>
+    <p>Aşağıda bir buton görüyorsanız, SAPUI5 düzgün çalışıyor demektir:</p>
+    <div id="content"></div>
+</body>
+</html> 

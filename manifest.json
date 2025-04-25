@@ -1,0 +1,27 @@
+{
+  "sap.app": {
+    "id": "sap.ui.demo.app",
+    "type": "application",
+    "title": "SAPUI5 Button Example",
+    "applicationVersion": {
+      "version": "1.0.0"
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "dependencies": {
+      "minUI5Version": "1.71.0",
+      "libs": {
+        "sap.m": {}
+      }
+    },
+    "models": {}
+  }
+} 

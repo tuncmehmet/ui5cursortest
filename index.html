@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>SAPUI5 To-Do List</title>
+    
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
+            --success-color: #10b981;
+            --success-light: #d1fae5;
+            --danger-color: #ef4444;
+            --danger-light: #fee2e2;
+            --neutral-50: #f9fafb;
+            --neutral-100: #f3f4f6;
+            --neutral-200: #e5e7eb;
+            --neutral-300: #d1d5db;
+            --neutral-400: #9ca3af;
+            --neutral-500: #6b7280;
+            --neutral-600: #4b5563;
+            --neutral-700: #374151;
+            --neutral-800: #1f2937;
+            --neutral-900: #111827;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            --radius-md: 8px;
+            --radius-sm: 4px;
+            --radius-lg: 12px;
+        }
+        
+        .completedTask {
+            text-decoration: line-through;
+            color: var(--neutral-500);
+            font-style: italic;
+            transition: all 0.3s ease;
+        }
+        
+        .todoItem {
+            border-radius: var(--radius-md);
+            margin-bottom: 12px !important;
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .todoItem:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        
+        .todoItem.completed {
+            border-left: 4px solid var(--success-color);
+            background-color: var(--success-light) !important;
+        }
+        
+        .todoText {
+            font-size: 16px;
+            font-family: var(--font-main);
+            padding: 8px 0;
+            font-weight: 500;
+        }
+        
+        .addItemPanel {
+            background-color: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 20px;
+            border-top: 4px solid var(--primary-color);
+            overflow: hidden;
+        }
+        
+        .addItemPanel .sapMPanelHdr {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .listPanel {
+            background-color: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: 16px;
+            border-top: 4px solid var(--primary-color);
+        }
+        
+        .appBackground {
+            background-color: var(--neutral-100);
+            background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .appTitle {
+            font-size: 24px;
+            color: var(--primary-color);
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        .deleteButton {
+            color: var(--danger-color);
+            transition: all 0.2s ease;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .deleteButton:hover {
+            color: white;
+            background-color: var(--danger-color);
+            transform: scale(1.1);
+        }
+        
+        .addButton {
+            background-color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+        }
+        
+        .addButton:hover {
+            background-color: var(--primary-dark) !important;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .taskInput {
+            border-radius: var(--radius-sm);
+            border: 2px solid var(--neutral-300);
+            transition: all 0.2s ease;
+            padding: 8px 12px;
+        }
+        
+        .taskInput:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .newItem {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        
+        .emptyState {
+            animation: scaleIn 0.5s ease-out;
+        }
+        
+        .sapMPanel {
+            animation: slideInRight 0.5s ease-out;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--neutral-100);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--neutral-400);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--neutral-500);
+        }
+        
+        /* Toast styling */
+        .sapMMessageToast {
+            background-color: var(--neutral-800) !important;
+            color: white !important;
+            border-radius: var(--radius-md) !important;
+            box-shadow: var(--shadow-lg) !important;
+            font-family: var(--font-main) !important;
+            padding: 12px 20px !important;
+        }
+        
+        /* List item styling */
+        .sapMLIB {
+            border-radius: var(--radius-md);
+            margin-bottom: 8px;
+        }
+        
+        /* Container width */
+        .contentContainer {
+            max-width: 800px !important;
+            margin: 0 auto !important;
+        }
+        
+        /* Empty illustration */
+        .sapMIllustratedMessage {
+            padding: 40px 0 !important;
+        }
+        
+        /* Task counter badge */
+        .taskCounter {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 9999px;
+            padding: 2px 8px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+    </style>
+    
+    <!-- Load SAPUI5 from CDN -->
+    <script id="sap-ui-bootstrap"
+        src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true"
+        data-sap-ui-resourceRoots='{"sap.ui.demo.app": "./sap/ui/demo/app"}'>
+    </script>
+    
+    <script>
+        sap.ui.getCore().attachInit(function() {
+            sap.ui.require(["sap/m/Shell", "sap/m/App", "sap/m/Page", "sap/m/Button", "sap/m/Input", "sap/m/List", 
+                            "sap/m/CustomListItem", "sap/m/MessageToast", "sap/ui/model/json/JSONModel", 
+                            "sap/m/FlexBox", "sap/ui/core/Icon", "sap/m/Panel", "sap/m/Title", "sap/m/Bar",
+                            "sap/m/Label", "sap/m/ToolbarSpacer", "sap/m/IllustratedMessage", "sap/m/IllustratedMessageSize",
+                            "sap/m/IllustratedMessageType", "sap/m/Avatar", "sap/m/AvatarColor", "sap/m/ObjectStatus"],
+                function(Shell, App, Page, Button, Input, List, CustomListItem, MessageToast, JSONModel, 
+                         FlexBox, Icon, Panel, Title, Bar, Label, ToolbarSpacer, IllustratedMessage, IllustratedMessageSize,
+                         IllustratedMessageType, Avatar, AvatarColor, ObjectStatus) {
+                
+                // Custom MessageToast configuration
+                MessageToast.setDefaultSettings({
+                    duration: 2500,
+                    width: "20em",
+                    animationTimingFunction: "ease",
+                    animationDuration: 350,
+                    my: "center bottom",
+                    at: "center bottom",
+                    offset: "0 -50",
+                    autoClose: true
+                });
+                
+                // Create a model for the to-do items
+                var oModel = new JSONModel({
+                    todoItems: [],
+                    stats: {
+                        total: 0,
+                        completed: 0
+                    }
+                });
+                sap.ui.getCore().setModel(oModel);
+                
+                // Create the input field
+                var oInput = new Input({
+                    placeholder: "Yeni bir görev ekleyin...",
+                    width: "100%",
+                    showValueHelp: true,
+                    valueHelpIconSrc: "sap-icon://add-activity",
+                    submit: function() {
+                        addItem();
+                    }
+                }).addStyleClass("taskInput sapUiSmallMarginBottom");
+                
+                // Create the list
+                var oList = new List({
+                    id: "todoList",
+                    showNoData: false,
+                    width: "100%"
+                }).addStyleClass("listPanel");
+                
+                // Create empty state when no items
+                var oEmptyState = new IllustratedMessage({
+                    illustrationType: IllustratedMessageType.NoActivities,
+                    illustrationSize: IllustratedMessageSize.Spot,
+                    title: "Henüz yapılacak görev yok",
+                    description: "Yeni bir görev eklemek için yukarıdaki formu kullanın",
+                    additionalContent: [
+                        new Button({
+                            text: "İlk Görevi Ekle",
+                            press: function() {
+                                oInput.focus();
+                            },
+                            type: "Emphasized"
+                        }).addStyleClass("addButton sapUiSmallMarginTop")
+                    ]
+                }).addStyleClass("emptyState");
+                
+                // Create a container for the list or empty state
+                var oListContainer = new FlexBox({
+                    direction: "Column",
+                    width: "100%",
+                    items: [oEmptyState]
+                }).addStyleClass("sapUiMediumMarginTop");
+                
+                // Counter for active tasks
+                var oTaskCounter = new FlexBox({
+                    alignItems: "Center",
+                    justifyContent: "SpaceBetween",
+                    width: "100%",
+                    items: [
+                        new Title({
+                            text: "Görevleriniz"
+                        }).addStyleClass("sapUiTinyMarginTop"),
+                        new FlexBox({
+                            alignItems: "Center",
+                            items: [
+                                new ObjectStatus({
+                                    text: "0 görev",
+                                    state: "Information"
+                                })
+                            ]
+                        })
+                    ]
+                }).addStyleClass("sapUiSmallMarginBottom sapUiMediumMarginTop");
+                
+                // Function to update the task counter
+                function updateTaskCounter() {
+                    var aTodoItems = oModel.getProperty("/todoItems");
+                    var iTotal = aTodoItems.length;
+                    var iCompleted = aTodoItems.filter(item => item.completed).length;
+                    
+                    oModel.setProperty("/stats/total", iTotal);
+                    oModel.setProperty("/stats/completed", iCompleted);
+                    
+                    var sText = iTotal + " görev";
+                    if (iCompleted > 0) {
+                        sText += " (" + iCompleted + " tamamlandı)";
+                    }
+                    
+                    oTaskCounter.getItems()[1].getItems()[0].setText(sText);
+                    
+                    if (iTotal === 0) {
+                        oTaskCounter.setVisible(false);
+                    } else {
+                        oTaskCounter.setVisible(true);
+                    }
+                }
+                
+                // Function to add an item
+                function addItem() {
+                    var sText = oInput.getValue().trim();
+                    
+                    if (sText) {
+                        // Get current items
+                        var aTodoItems = oModel.getProperty("/todoItems");
+                        
+                        // Add new item
+                        aTodoItems.push({
+                            text: sText,
+                            id: new Date().getTime().toString(),
+                            completed: false,
+                            created: new Date()
+                        });
+                        
+                        // Update model
+                        oModel.setProperty("/todoItems", aTodoItems);
+                        
+                        // Clear input
+                        oInput.setValue("");
+                        
+                        // Update list
+                        updateList();
+                        updateTaskCounter();
+                        
+                        // Show success message
+                        MessageToast.show("Görev başarıyla eklendi");
+                    } else {
+                        MessageToast.show("Lütfen bir görev girin");
+                    }
+                }
+                
+                // Function to update the list and handle empty state
+                function updateList() {
+                    var aTodoItems = oModel.getProperty("/todoItems");
+                    
+                    // Handle empty state
+                    if (aTodoItems.length === 0) {
+                        oListContainer.removeAllItems();
+                        oListContainer.addItem(oEmptyState);
+                        return;
+                    } else if (oListContainer.getItems()[0] === oEmptyState) {
+                        oListContainer.removeAllItems();
+                        oListContainer.addItem(oList);
+                    }
+                    
+                    // Reset list
+                    oList.removeAllItems();
+                    
+                    // Sort items: incomplete first, then by creation date (newest first)
+                    aTodoItems.sort(function(a, b) {
+                        if (a.completed !== b.completed) {
+                            return a.completed ? 1 : -1;
+                        }
+                        return new Date(b.created) - new Date(a.created);
+                    });
+                    
+                    // Add items
+                    aTodoItems.forEach(function(item, index) {
+                        // Create the text element
+                        var oItemText = new sap.m.Text({
+                            text: item.text
+                        }).addStyleClass("todoText");
+                        
+                        // Apply completed style if the item is marked as completed
+                        if (item.completed) {
+                            oItemText.addStyleClass("completedTask");
+                        }
+                        
+                        // Create the delete button
+                        var oDeleteButton = new Button({
+                            icon: "sap-icon://decline",
+                            type: "Transparent",
+                            tooltip: "Görevi Sil",
+                            press: function(evt) {
+                                // Prevent the list item press event
+                                evt.stopPropagation();
+                                
+                                // Remove item
+                                var updatedItems = aTodoItems.filter(function(todoItem) {
+                                    return todoItem.id !== item.id;
+                                });
+                                
+                                oModel.setProperty("/todoItems", updatedItems);
+                                updateList();
+                                updateTaskCounter();
+                                
+                                MessageToast.show("Görev silindi");
+                            }
+                        }).addStyleClass("deleteButton");
+                        
+                        // Create a status indicator
+                        var oStatusIndicator = new Avatar({
+                            displaySize: "XS",
+                            backgroundColor: item.completed ? AvatarColor.Accent6 : AvatarColor.Accent8,
+                            src: item.completed ? "sap-icon://accept" : "sap-icon://to-be-reviewed"
+                        });
+                        
+                        // Create a flexbox to hold the item text and delete button
+                        var oFlexBox = new FlexBox({
+                            alignItems: "Center",
+                            justifyContent: "SpaceBetween",
+                            items: [
+                                new FlexBox({
+                                    alignItems: "Center",
+                                    items: [
+                                        oStatusIndicator,
+                                        oItemText
+                                    ]
+                                }).addStyleClass("sapUiTinyMarginBegin"),
+                                oDeleteButton
+                            ],
+                            width: "100%"
+                        }).addStyleClass("sapUiTinyMargin");
+                        
+                        // Create and add the list item
+                        var oListItem = new CustomListItem({
+                            content: [oFlexBox],
+                            type: "Active",
+                            press: function() {
+                                // Toggle completion status
+                                item.completed = !item.completed;
+                                oModel.setProperty("/todoItems", aTodoItems);
+                                
+                                // Update list
+                                if (item.completed) {
+                                    oItemText.addStyleClass("completedTask");
+                                    oListItem.addStyleClass("completed");
+                                    oStatusIndicator.setBackgroundColor(AvatarColor.Accent6);
+                                    oStatusIndicator.setSrc("sap-icon://accept");
+                                    MessageToast.show("Görev tamamlandı");
+                                } else {
+                                    oItemText.removeStyleClass("completedTask");
+                                    oListItem.removeStyleClass("completed");
+                                    oStatusIndicator.setBackgroundColor(AvatarColor.Accent8);
+                                    oStatusIndicator.setSrc("sap-icon://to-be-reviewed");
+                                    MessageToast.show("Görev tamamlanmadı olarak işaretlendi");
+                                }
+                                
+                                updateTaskCounter();
+                            }
+                        }).addStyleClass("todoItem newItem");
+                        
+                        // Add completed class if item is completed
+                        if (item.completed) {
+                            oListItem.addStyleClass("completed");
+                        }
+                        
+                        oList.addItem(oListItem);
+                    });
+                }
+                
+                // Create add button
+                var oAddButton = new Button({
+                    text: "Ekle",
+                    type: "Emphasized",
+                    width: "150px",
+                    icon: "sap-icon://add",
+                    press: addItem
+                }).addStyleClass("addButton");
+                
+                // Create add panel
+                var oAddPanel = new Panel({
+                    headerText: "Yeni Görev Ekle",
+                    expanded: true,
+                    expandable: false,
+                    content: [
+                        new sap.m.VBox({
+                            items: [
+                                new Label({
+                                    text: "Ne yapmanız gerekiyor?",
+                                    design: "Bold"
+                                }).addStyleClass("sapUiTinyMarginBottom"),
+                                new FlexBox({
+                                    alignItems: "Center",
+                                    items: [
+                                        new FlexBox({
+                                            direction: "Column",
+                                            width: "100%",
+                                            items: [oInput]
+                                        }),
+                                        new FlexBox({
+                                            width: "auto",
+                                            items: [oAddButton],
+                                            layoutData: new sap.m.FlexItemData({
+                                                styleClass: "sapUiSmallMarginBegin"
+                                            })
+                                        })
+                                    ],
+                                    width: "100%"
+                                })
+                            ],
+                            width: "100%"
+                        }).addStyleClass("sapUiSmallMargin")
+                    ]
+                }).addStyleClass("addItemPanel");
+                
+                // Create the page header
+                var oPageHeader = new Bar({
+                    contentMiddle: [
+                        new Title({
+                            text: "Yapılacaklar Listesi"
+                        }).addStyleClass("appTitle")
+                    ]
+                });
+                
+                // Create container for task list section
+                var oTaskListSection = new sap.m.VBox({
+                    items: [
+                        oTaskCounter,
+                        oListContainer
+                    ],
+                    width: "100%"
+                });
+                
+                // Create the page 
+                var oPage = new Page({
+                    customHeader: oPageHeader,
+                    backgroundDesign: "Transparent",
+                    content: [
+                        new sap.m.VBox({
+                            items: [
+                                oAddPanel,
+                                oTaskListSection
+                            ],
+                            width: "100%",
+                            alignItems: "Stretch"
+                        }).addStyleClass("sapUiContentPadding contentContainer")
+                    ]
+                }).addStyleClass("appBackground");
+                
+                // Create the app
+                var oApp = new App({
+                    pages: [oPage]
+                });
+                
+                // Create the shell
+                var oShell = new Shell({
+                    app: oApp,
+                    appWidthLimited: false
+                });
+                
+                // Place the shell in the content div
+                oShell.placeAt("content");
+            });
+        });
+    </script>
+</head>
+<body class="sapUiBody">
+    <div id="content" style="height: 100%"></div>
+</body>
+</html> 
